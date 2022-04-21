@@ -11,11 +11,41 @@ import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class Servidor extends Thread {
+
+	public static void main(String[] args) throws IOException {
+
+		Cliente app = new Cliente();
+		app.conectar();
+		app.escutar();
+
+		// criando os objetos necessários para instancias o servidor
+		try {
+			JLabel lblMessage = new JLabel("Porta do servidor:");
+			JTextField txtPorta = new JTextField("55555");
+			Object[] texts = { lblMessage, txtPorta };
+			JOptionPane.showMessageDialog(null, texts);
+			server = new ServerSocket(Integer.parseInt(txtPorta.getText()));
+			clientes = new ArrayList<BufferedWriter>();
+			JOptionPane.showConfirmDialog(null, "Servidor ativo na porta: " + txtPorta.getText());
+
+			while (true) {
+				System.out.println("Aguardando conexão...");
+				Socket con = server.accept();
+				System.out.println("Cliente conectado.");
+				Thread t = new Servidor(con);
+				t.start();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	private static ArrayList<BufferedWriter> clientes;
 	private static ServerSocket server;
